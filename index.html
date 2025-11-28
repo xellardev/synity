@@ -4,19 +4,19 @@
 <meta charset="UTF-8">
 <title>V3X Eclipse Portal</title>
 <style>
-    body { margin:0; padding:0; background:#0a0a0a; color:#0ff; font-family:'Segoe UI',sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; overflow:hidden; }
-    .loader { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:32px; text-shadow:0 0 20px #0ff; }
-    .container { display:none; width:90%; max-width:1000px; text-align:center; position:relative; }
-    .settings { position:absolute; top:20px; left:20px; background:#111; color:#0ff; padding:10px 20px; border:none; cursor:pointer; border-radius:8px; box-shadow:0 0 10px #0ff; transition:0.3s; }
-    .settings:hover { background:#222; }
-    .buttons { display:flex; justify-content:space-around; margin-top:100px; flex-wrap:wrap; gap:20px; }
-    .btn { background:#111; color:#0ff; padding:20px 40px; border:none; border-radius:12px; font-size:18px; cursor:pointer; box-shadow:0 0 15px #0ff; transition:0.3s; flex:1; min-width:150px; position:relative; }
-    .btn:hover { transform: scale(1.05); box-shadow:0 0 25px #0ff; }
-    .script-box { display:none; margin-top:20px; background:#111; padding:15px; border-radius:10px; color:#0ff; font-family: monospace; font-size:14px; position:relative; }
-    .copy-btn { position:absolute; right:10px; top:10px; background:#0ff; color:#000; border:none; padding:5px 10px; cursor:pointer; border-radius:5px; font-weight:bold; }
-    .fade-out { animation: fadeOut 0.5s forwards; }
-    @keyframes fadeOut { to { opacity:0; transform:scale(0.8); } }
-    .error-msg { color:red; font-size:16px; margin-top:10px; font-weight:bold; }
+body { margin:0; padding:0; background:#0a0a0a; color:#0ff; font-family:'Segoe UI',sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; overflow:hidden; }
+.loader { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:32px; text-shadow:0 0 20px #0ff; }
+.container { display:none; width:90%; max-width:1000px; text-align:center; position:relative; }
+.settings { position:absolute; top:20px; left:20px; background:#111; color:#0ff; padding:10px 20px; border:none; cursor:pointer; border-radius:8px; box-shadow:0 0 10px #0ff; transition:0.3s; }
+.settings:hover { background:#222; }
+.buttons { display:flex; justify-content:space-around; margin-top:100px; flex-wrap:wrap; gap:20px; }
+.btn { background:#111; color:#0ff; padding:20px 40px; border:none; border-radius:12px; font-size:18px; cursor:pointer; box-shadow:0 0 15px #0ff; transition:0.3s; flex:1; min-width:150px; position:relative; }
+.btn:hover { transform: scale(1.05); box-shadow:0 0 25px #0ff; }
+.script-box { display:none; margin-top:20px; background:#111; padding:15px; border-radius:10px; color:#0ff; font-family: monospace; font-size:14px; position:relative; }
+.copy-btn { position:absolute; right:10px; top:10px; background:#0ff; color:#000; border:none; padding:5px 10px; cursor:pointer; border-radius:5px; font-weight:bold; }
+.fade-out { animation: fadeOut 0.5s forwards; }
+@keyframes fadeOut { to { opacity:0; transform:scale(0.8); } }
+.error-msg { color:red; font-size:16px; margin-top:10px; font-weight:bold; }
 </style>
 </head>
 <body>
@@ -46,19 +46,19 @@
 <script>
 let config = null;
 
-// Загрузка конфигурации
+// Загружаем cfg.json с GitHub Raw URL
 async function loadConfig() {
     try {
-        const res = await fetch('cfg.json');
+        const res = await fetch('https://raw.githubusercontent.com/v3x-m3sh/v3x-m3sh.github.io/main/cfg.json');
         if(!res.ok) throw new Error('Config not found');
         config = await res.json();
     } catch(e) {
-        alert("Ошибка загрузки cfg.json: " + e.message);
+        console.warn("Ошибка загрузки cfg.json, применяем дефолт:", e.message);
         config = { enabled:false, Site:false, Discord:false, Telegram:false, Idk:false };
     }
 }
 
-// Инициализация сайта
+// Инициализация сайта с прогрузкой 4 сек
 async function initSite() {
     await loadConfig();
     setTimeout(() => {
@@ -72,42 +72,39 @@ async function initSite() {
             container.innerHTML = "<h1 style='color:red;'>Site disabled in config</h1>";
             container.style.display='block';
         }
-    }, 4000); // 4 секунды загрузки
+    }, 4000);
 }
 
-// Настройка кнопок с учетом конфига
+// Настройка кнопок с учётом конфигурации
 function setupButtons(){
     const discordBtn = document.getElementById('discordBtn');
     const telegramBtn = document.getElementById('telegramBtn');
     const idkBtn = document.getElementById('idkBtn');
     const gotScriptBtn = document.getElementById('gotScriptBtn');
     const scriptBox = document.getElementById('scriptBox');
-    const errorMsg = document.getElementById('errorMsg');
     const settingsBtn = document.getElementById('settingsBtn');
+
+    const errorMsg = document.getElementById('errorMsg');
 
     settingsBtn.onclick = () => alert("Error 401: Недоступно");
 
-    // Discord
     discordBtn.onclick = () => {
         if(config.Discord){
             fadeAndRedirect('https://discord.gg/2myNawMhHa');
         } else showError();
     }
 
-    // Telegram
     telegramBtn.onclick = () => {
         if(config.Telegram){
             fadeAndRedirect('https://t.me/spare_link');
         } else showError();
     }
 
-    // idk
     idkBtn.onclick = () => {
         if(config.Idk) alert('idk pressed!');
         else showError();
     }
 
-    // Got Script
     let scriptVisible = false;
     gotScriptBtn.onclick = () => {
         scriptVisible = !scriptVisible;
@@ -116,11 +113,13 @@ function setupButtons(){
     }
 }
 
+// Анимация и редирект
 function fadeAndRedirect(url){
     document.querySelectorAll('.btn').forEach(b => b.classList.add('fade-out'));
     setTimeout(()=> window.location.href = url, 500);
 }
 
+// Показ ошибки для отключённых функций
 function showError(){
     const errorMsg = document.getElementById('errorMsg');
     errorMsg.innerText = "This function is not available.\n(Maybe Site/html on update xD)";
@@ -128,6 +127,7 @@ function showError(){
     setTimeout(()=>{ errorMsg.style.display='none'; },3000);
 }
 
+// Копирование скрипта
 function copyScript(){
     const scriptText = document.getElementById('scriptText').innerText;
     navigator.clipboard.writeText(scriptText)
@@ -137,7 +137,7 @@ function copyScript(){
 
 // Запуск
 initSite();
-
 </script>
+
 </body>
 </html>
