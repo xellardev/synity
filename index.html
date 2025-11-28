@@ -49,15 +49,16 @@ body {
   100% { filter: brightness(1.8); }
 }
 
-/* Проценты */
+/* Счетчик над прогресс-баром */
 #percent {
   position:absolute;
   width:100%;
   text-align:center;
-  top:50%;
+  top:-30px;
   left:50%;
-  transform:translate(-50%,-50%);
+  transform:translateX(-50%);
   font-weight:bold;
+  font-size:16px;
 }
 
 /* Loaded текст */
@@ -82,16 +83,8 @@ body {
   transition: all 1s ease;
 }
 
-#welcome h1 {
-  margin:0;
-  font-size:32px;
-}
-
-#welcome h2 {
-  margin:0;
-  font-size:24px;
-  font-weight:normal;
-}
+#welcome h1 { margin:0; font-size:32px; }
+#welcome h2 { margin:0; font-size:24px; font-weight:normal; }
 
 /* Меню */
 #menu {
@@ -165,8 +158,8 @@ body {
 
 <!-- Loader -->
 <div id="loader">
-  <div id="progressBar"></div>
   <div id="percent">0/100%</div>
+  <div id="progressBar"></div>
 </div>
 
 <!-- Loaded Text -->
@@ -197,7 +190,7 @@ body {
 // Прогресс загрузки
 let progress = 0;
 let loaderInterval = setInterval(() => {
-  progress += Math.floor(Math.random()*5)+1; // +рандом скорость
+  progress += Math.floor(Math.random()*5)+1;
   if(progress>100) progress=100;
   document.getElementById('progressBar').style.width = progress+'%';
   document.getElementById('percent').innerText = progress+'/100%';
@@ -211,7 +204,12 @@ let loaderInterval = setInterval(() => {
       loaded.style.opacity=1;
       loaded.style.transform='translateY(0)';
     },100);
-    setTimeout(showWelcomeAndMenu,1000);
+    // Скрываем Loaded и показываем меню через 3 сек
+    setTimeout(()=>{
+      loaded.style.opacity=0;
+      loaded.style.transform='translateY(-50px)';
+      showWelcomeAndMenu();
+    },3000);
   }
 },100);
 
@@ -245,27 +243,11 @@ function copyScript(){
     .catch(()=>alert('Ошибка копирования'));
 }
 
-// Кнопки Discord/Telegram
-const discordEnabled=false;
-const telegramEnabled=false;
+// Кнопки Discord/Telegram (рабочие ссылки)
 const discordBtn=document.getElementById('discordBtn');
 const telegramBtn=document.getElementById('telegramBtn');
-const errorMsg=document.getElementById('errorMsg');
-
-discordBtn.onclick = () => {
-  if(discordEnabled) window.location.href='https://discord.gg/2myNawMhHa';
-  else showError();
-}
-telegramBtn.onclick = () => {
-  if(telegramEnabled) window.location.href='https://t.me/spare_link';
-  else showError();
-}
-
-function showError(){
-  errorMsg.innerText="This function is not available.\n(Maybe Site/html on update xD)";
-  errorMsg.style.display='block';
-  setTimeout(()=>{errorMsg.style.display='none';},3000);
-}
+discordBtn.onclick = () => window.location.href='https://discord.gg/2myNawMhHa';
+telegramBtn.onclick = () => window.location.href='https://t.me/+wMxppx85Jj44NTdi';
 </script>
 </body>
 </html>
