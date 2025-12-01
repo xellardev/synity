@@ -1,253 +1,457 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>v3X Eclipse Portal</title>
-<style>
-body {
-  margin:0;
-  padding:0;
-  height:100vh;
-  font-family:'Segoe UI',sans-serif;
-  background:#000;
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-start;
-  align-items:center;
-  overflow:hidden;
-  color:#0ff;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V3X M3SH - Scripts Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-/* Прогресс загрузки */
-#loader {
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  width:300px;
-  height:30px;
-  border:2px solid #0ff;
-  border-radius:15px;
-  overflow:hidden;
-}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-#progressBar {
-  height:100%;
-  width:0%;
-  background: repeating-linear-gradient(
-    45deg,
-    #0ff,
-    #0ff 5px,
-    #000 5px,
-    #000 10px
-  );
-  animation: pulse 1s infinite alternate;
-}
+        /* Animated Background Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
 
-@keyframes pulse {
-  0% { filter: brightness(1); }
-  100% { filter: brightness(1.8); }
-}
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
 
-/* Счетчик над прогресс-баром */
-#percent {
-  position:absolute;
-  width:100%;
-  text-align:center;
-  top:-30px;
-  left:50%;
-  transform:translateX(-50%);
-  font-weight:bold;
-  font-size:16px;
-}
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
 
-/* Loaded текст */
-#loadedText {
-  display:none;
-  font-size:36px;
-  color:#0ff;
-  text-shadow:0 0 10px #fff,0 0 20px #0ff;
-  margin-top:20px;
-  opacity:0;
-  transform:translateY(-50px);
-  transition: all 1s ease;
-}
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
 
-/* Приветствие */
-#welcome {
-  position:absolute;
-  top:20px;
-  text-align:center;
-  opacity:0;
-  transform:translateY(-50px);
-  transition: all 1s ease;
-}
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
 
-#welcome h1 { margin:0; font-size:32px; }
-#welcome h2 { margin:0; font-size:24px; font-weight:normal; }
+        .loader-dots {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
 
-/* Меню */
-#menu {
-  display:none;
-  margin-top:150px;
-  text-align:center;
-  background: rgba(0,0,0,0.7);
-  border-radius:20px;
-  padding:20px 40px;
-  box-shadow:0 0 20px #0ff;
-  opacity:0;
-  transform:translateY(50px);
-  transition: all 1.5s ease;
-}
+        .dot {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
 
-#menu .buttons {
-  display:flex;
-  justify-content:center;
-  gap:20px;
-  flex-wrap:wrap;
-}
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
 
-.btn {
-  background: rgba(17,17,17,0.8);
-  color:#0ff;
-  padding:15px 30px;
-  border:none;
-  border-radius:15px;
-  font-size:18px;
-  cursor:pointer;
-  box-shadow:0 0 15px #0ff;
-  transition: all 0.3s;
-}
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
 
-.btn:hover {
-  transform:scale(1.1);
-  box-shadow:0 0 35px #0ff;
-}
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(0) translateY(0);
+            }
+            40% {
+                transform: scale(1) translateY(-30px);
+            }
+        }
 
-/* Got Script box */
-#scriptBox {
-  display:none;
-  margin-top:15px;
-  background: rgba(0,0,0,0.8);
-  padding:10px;
-  border-radius:10px;
-  position:relative;
-  font-family:monospace;
-}
+        .loading-text {
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
 
-.copy-btn {
-  position:absolute;
-  right:10px;
-  top:5px;
-  background:#0ff;
-  color:#000;
-  border:none;
-  padding:5px 10px;
-  cursor:pointer;
-  border-radius:5px;
-}
+        /* Main Content */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            animation: fadeIn 1s forwards 0.5s;
+        }
 
-.error-msg {
-  color:red;
-  margin-top:10px;
-  display:none;
-}
-</style>
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .logo {
+            font-size: 64px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .subtitle {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 60px;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Buttons Grid */
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 40px;
+        }
+
+        .button-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: scaleIn 0.6s ease-out backwards;
+        }
+
+        .button-card:nth-child(1) { animation-delay: 0.1s; }
+        .button-card:nth-child(2) { animation-delay: 0.2s; }
+        .button-card:nth-child(3) { animation-delay: 0.3s; }
+        .button-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .button-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .button-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .button-title {
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .button-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        /* Scripts Section */
+        .scripts-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 900px;
+            animation: scaleIn 0.6s ease-out 0.5s backwards;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .toggle-icon {
+            color: white;
+            font-size: 24px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        .scripts-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .scripts-content.open {
+            max-height: 500px;
+        }
+
+        .script-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .script-name {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .script-code {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            color: #a8dadc;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            word-break: break-all;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 48px;
+            }
+
+            .subtitle {
+                font-size: 18px;
+            }
+
+            .buttons-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        <div class="loading-text">LOADING...</div>
+    </div>
 
-<!-- Loader -->
-<div id="loader">
-  <div id="percent">0/100%</div>
-  <div id="progressBar"></div>
-</div>
+    <!-- Particles Background -->
+    <div class="particles" id="particles"></div>
 
-<!-- Loaded Text -->
-<div id="loadedText">Loaded!</div>
+    <!-- Main Content -->
+    <div class="container">
+        <div class="logo">V3X M3SH</div>
+        <div class="subtitle">Premium Scripts Hub</div>
 
-<!-- Welcome -->
-<div id="welcome">
-  <h1>Hello</h1>
-  <h2>v3x and m3sh</h2>
-  <h2>love's you</h2>
-</div>
+        <!-- Social Buttons -->
+        <div class="buttons-grid">
+            <div class="button-card" onclick="window.open('https://discord.gg/SAmwBjXpHc', '_blank')">
+                <div class="button-icon">💬</div>
+                <div class="button-title">Discord</div>
+                <div class="button-description">Join our community</div>
+            </div>
 
-<!-- Menu -->
-<div id="menu">
-  <div class="buttons">
-    <button class="btn" id="discordBtn">Discord</button>
-    <button class="btn" id="telegramBtn">Telegram</button>
-  </div>
-  <button class="btn" id="gotScriptBtn" style="margin-top:15px;">Got the script</button>
-  <div id="scriptBox">
-    <span id="scriptText">loadstring:HTTPGet(".")()</span>
-    <button class="copy-btn" onclick="copyScript()">📎</button>
-  </div>
-  <div class="error-msg" id="errorMsg"></div>
-</div>
+            <div class="button-card" onclick="window.open('https://t.me/+OC679TOlKRAzMzE6', '_blank')">
+                <div class="button-icon">📱</div>
+                <div class="button-title">Telegram</div>
+                <div class="button-description">Stay connected</div>
+            </div>
+        </div>
 
-<script>
-// Прогресс загрузки
-let progress = 0;
-let loaderInterval = setInterval(() => {
-  progress += Math.floor(Math.random()*5)+1;
-  if(progress>100) progress=100;
-  document.getElementById('progressBar').style.width = progress+'%';
-  document.getElementById('percent').innerText = progress+'/100%';
-  if(progress>=100){
-    clearInterval(loaderInterval);
-    document.getElementById('loader').style.display='none';
-    // Show Loaded text
-    let loaded = document.getElementById('loadedText');
-    loaded.style.display='block';
-    setTimeout(()=>{
-      loaded.style.opacity=1;
-      loaded.style.transform='translateY(0)';
-    },100);
-    // Скрываем Loaded и показываем меню через 3 сек
-    setTimeout(()=>{
-      loaded.style.opacity=0;
-      loaded.style.transform='translateY(-50px)';
-      showWelcomeAndMenu();
-    },3000);
-  }
-},100);
+        <!-- Scripts Section -->
+        <div class="scripts-section">
+            <div class="section-header" onclick="toggleScripts()">
+                <div class="section-title">Our Scripts</div>
+                <div class="toggle-icon" id="toggleIcon">▼</div>
+            </div>
 
-// Функция показать приветствие и меню
-function showWelcomeAndMenu(){
-  let welcome = document.getElementById('welcome');
-  let menu = document.getElementById('menu');
-  welcome.style.opacity=1;
-  welcome.style.transform='translateY(0)';
-  menu.style.display='block';
-  setTimeout(()=>{
-    menu.style.opacity=1;
-    menu.style.transform='translateY(0)';
-  },100);
-}
+            <div class="scripts-content" id="scriptsContent">
+                <div class="script-item">
+                    <div class="script-name">Loader V1</div>
+                    <div class="script-code" id="script1">loadstring(game:HttpGet("https://raw.githubusercontent.com/v3x-m3sh/RB/refs/heads/modules/loader.lua"))()</div>
+                    <button class="copy-btn" onclick="copyScript('script1', this)">Copy Script</button>
+                </div>
 
-// Got Script
-let scriptVisible = false;
-const gotScriptBtn = document.getElementById('gotScriptBtn');
-const scriptBox = document.getElementById('scriptBox');
-gotScriptBtn.onclick = () => {
-  scriptVisible = !scriptVisible;
-  scriptBox.style.display = scriptVisible ? 'block' : 'none';
-}
+                <div class="script-item">
+                    <div class="script-name">Loader V2</div>
+                    <div class="script-code" id="script2">loadstring(game:HttpGet("https://raw.githubusercontent.com/v3x-m3sh/RB/refs/heads/modules/loaderV2.lua"))()</div>
+                    <button class="copy-btn" onclick="copyScript('script2', this)">Copy Script</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-// Копирование скрипта
-function copyScript(){
-  const scriptText = document.getElementById('scriptText').innerText;
-  navigator.clipboard.writeText(scriptText)
-    .then(()=>alert('Скрипт скопирован!'))
-    .catch(()=>alert('Ошибка копирования'));
-}
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
 
-// Кнопки Discord/Telegram (рабочие ссылки)
-const discordBtn=document.getElementById('discordBtn');
-const telegramBtn=document.getElementById('telegramBtn');
-discordBtn.onclick = () => window.location.href='https://discord.gg/SAmwBjXpHc';
-telegramBtn.onclick = () => window.location.href='https://t.me/+wMxppx85Jj44NTdi';
-</script>
+        // Hide loading screen
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+            }, 2000);
+        });
+
+        // Toggle scripts section
+        function toggleScripts() {
+            const content = document.getElementById('scriptsContent');
+            const icon = document.getElementById('toggleIcon');
+            content.classList.toggle('open');
+            icon.classList.toggle('rotated');
+        }
+
+        // Copy script to clipboard
+        function copyScript(scriptId, button) {
+            const scriptText = document.getElementById(scriptId).textContent;
+            navigator.clipboard.writeText(scriptText).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied! ✓';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // Initialize
+        createParticles();
+    </script>
 </body>
 </html>
