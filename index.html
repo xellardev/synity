@@ -4,157 +4,150 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Synity Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --bg-color: #02040a;
-            --accent-blue: #0a1329;
-            --grid-color: rgba(255, 255, 255, 0.05);
-            --glow-color: rgba(59, 130, 246, 0.15);
-        }
-
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-color);
+            background-color: #02040a;
             margin: 0;
             overflow: hidden;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
             color: white;
         }
 
-        /* Интерактивная сетка */
-        .grid-bg {
+        /* Интерактивная сетка и фон */
+        .bg-layer {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            inset: 0;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), #0a1329 0%, #02040a 60%);
+            z-index: -2;
+        }
+        .grid-layer {
+            position: fixed;
+            inset: 0;
             background-image: 
-                linear-gradient(var(--grid-color) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
             background-size: 45px 45px;
             z-index: -1;
         }
 
-        /* Фонарик за мышкой */
-        .cursor-glow {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: radial-gradient(circle 250px at var(--x, 50%) var(--y, 50%), var(--glow-color), transparent 80%);
-            z-index: -1;
-            pointer-events: none;
-        }
-
         .glass {
-            background: rgba(15, 17, 23, 0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
+            background: rgba(17, 18, 23, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 18px;
         }
 
-        .glow-text {
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        .glow {
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
         }
 
-        .preview-box {
+        /* Контейнеры внутри блоков (на 2-3пх меньше) */
+        .inner-content {
             background: #000;
             border-radius: 12px;
-            margin: 8px;
-            height: 180px;
+            margin: 3px;
+            height: calc(100% - 6px);
+            width: calc(100% - 6px);
             overflow: hidden;
         }
 
-        .btn-gradient {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            padding: 2px; /* Для эффекта рамки, если нужно */
+        .copy-btn:active {
+            transform: scale(0.9);
         }
     </style>
 </head>
 <body>
 
-    <div class="grid-bg"></div>
-    <div class="cursor-glow"></div>
+    <div class="bg-layer"></div>
+    <div class="grid-layer"></div>
 
-    <div class="grid grid-cols-12 gap-6 max-w-6xl w-full p-6 relative">
+    <div class="grid grid-cols-12 gap-5 w-[1100px] h-[600px] relative">
         
-        <div class="col-span-4 space-y-4">
-            <div class="flex gap-4">
-                <div class="w-24 h-40 glass overflow-hidden flex items-center justify-center p-1">
-                    <img src="https://raw.githubusercontent.com/YourUser/YourRepo/main/art.png" class="rounded-lg w-full h-full object-cover opacity-70">
-                </div>
-                <div class="flex-1 p-6 glass flex flex-col justify-center">
-                    <span class="text-gray-400 text-[10px] uppercase tracking-widest">Supported</span>
-                    <span class="text-2xl font-semibold">9+ Games</span>
+        <div class="col-span-4 flex gap-4 h-[160px]">
+            <div class="w-[100px] glass p-[3px]">
+                <div class="inner-content">
+                    <img src="https://raw.githubusercontent.com/lixeal/xllr/home/art.png" class="w-full h-full object-cover opacity-80">
                 </div>
             </div>
-
-            <div class="p-6 glass text-center">
-                <h2 class="tracking-[0.3em] font-semibold text-sm">SYNITY</h2>
-                <h2 class="tracking-[0.3em] font-semibold text-sm opacity-50">SYNITY</h2>
-                <p class="text-gray-400 text-[11px] mt-4 leading-relaxed">Free hub with our UI<br>Every week update</p>
-            </div>
-
-            <div class="p-3 glass text-center">
-                <span class="text-xs font-medium">Version | v2.1.55</span>
+            <div class="flex-1 glass p-6 flex flex-col justify-center">
+                <span class="text-gray-400 text-[11px] uppercase tracking-[0.2em]">Supported</span>
+                <span class="text-2xl font-medium mt-1">9+ Games</span>
             </div>
         </div>
 
-        <div class="col-span-8 space-y-6">
-            <div class="flex justify-end">
-                <div class="px-14 py-5 glass">
-                    <h1 class="text-3xl font-semibold glow-text tracking-tight">synity.dev</h1>
-                </div>
+        <div class="col-span-8 flex justify-end items-start">
+            <div class="px-14 py-5 glass">
+                <h1 class="text-3xl font-medium glow tracking-tight">synity.dev</h1>
             </div>
+        </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div class="p-6 glass h-full">
-                    <h3 class="text-sm font-semibold mb-4">ChangeLogs</h3>
-                    <ul class="text-gray-400 text-[11px] space-y-3">
-                        <li>• Deploy site to vercel</li>
-                        <li>• Collab with Dara HUB</li>
-                    </ul>
-                </div>
+        <div class="col-span-3 space-y-4 h-[220px]">
+            <div class="h-[160px] glass flex flex-col justify-center items-center text-center">
+                <h2 class="tracking-[0.3em] text-[13px]">SYNITY</h2>
+                <h2 class="tracking-[0.3em] text-[13px] opacity-40">SYNITY</h2>
+                <p class="text-gray-400 text-[10px] mt-4 leading-relaxed">Free hub with our UI<br>Every week update</p>
+            </div>
+            <div class="py-3 glass text-center">
+                <span class="text-[11px]">Version | v2.1.55</span>
+            </div>
+        </div>
 
-                <div class="glass flex flex-col">
-                    <div class="p-4 flex justify-between items-center border-b border-white/5">
-                        <span class="font-semibold text-sm glow-text">Get Script</span>
-                        <div class="flex items-center gap-2 bg-black/40 px-3 py-1 rounded-lg border border-white/10">
-                            <code class="text-[10px] text-gray-400">loadstring(game:HttpGet("synity...</code>
-                            <button onclick="copyScript()" class="hover:scale-110 transition-transform">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy opacity-70"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="preview-box">
-                        <img src="https://raw.githubusercontent.com/YourUser/YourRepo/main/preview.png" class="w-full h-full object-cover">
-                    </div>
+        <div class="col-span-3 h-[220px]">
+            <div class="h-full glass p-6">
+                <h3 class="text-[12px] font-medium mb-4">ChangeLogs</h3>
+                <div class="space-y-2 text-gray-400 text-[10px]">
+                    <p>• Deploy site to vercel</p>
+                    <p>• Collab with Dara HUB</p>
                 </div>
             </div>
         </div>
 
-        <div class="col-span-5 p-4 glass flex justify-around items-center">
-            <a href="#" class="text-[10px] font-semibold uppercase tracking-widest opacity-70 hover:opacity-100 transition-opacity">Discord</a>
-            <a href="#" class="text-[10px] font-semibold uppercase tracking-widest opacity-70 hover:opacity-100 transition-opacity">Telegram</a>
-            <a href="#" class="text-[10px] font-semibold uppercase tracking-widest opacity-70 hover:opacity-100 transition-opacity">Github</a>
+        <div class="col-span-6 h-[320px] -mt-[100px]">
+            <div class="glass h-full flex flex-col">
+                <div class="p-4 flex justify-between items-center border-b border-white/5">
+                    <span class="font-medium text-base glow ml-2">Get Script</span>
+                    <div class="flex items-center gap-3 bg-black/50 px-3 py-1.5 rounded-lg border border-white/10">
+                        <code class="text-[10px] text-gray-400">loadstring(game:HttpGet("synity...</code>
+                        <button onclick="copyScript()" class="copy-btn transition-transform">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-60 hover:opacity-100"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 p-[3px]">
+                    <div class="inner-content">
+                        <img src="https://raw.githubusercontent.com/lixeal/xllr/home/preview.png" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-span-5 -mt-6">
+            <div class="glass py-4 flex justify-around items-center">
+                <a href="https://discord.gg/SAmwBjXpHc" target="_blank" class="text-[10px] tracking-[0.2em] opacity-60 hover:opacity-100 transition-opacity">Discord</a>
+                <a href="https://t.me/xellar_spare" target="_blank" class="text-[10px] tracking-[0.2em] opacity-60 hover:opacity-100 transition-opacity">Telegram</a>
+                <a href="https://github.com/lixeal/xllr/tree/home" target="_blank" class="text-[10px] tracking-[0.2em] opacity-60 hover:opacity-100 transition-opacity">Github</a>
+            </div>
         </div>
     </div>
 
     <script>
-        // Движение фонарика за мышкой
-        const glow = document.querySelector('.cursor-glow');
+        // Интерактивный фон
         window.addEventListener('mousemove', (e) => {
-            glow.style.setProperty('--x', e.clientX + 'px');
-            glow.style.setProperty('--y', e.clientY + 'px');
+            document.body.style.setProperty('--x', e.clientX + 'px');
+            document.body.style.setProperty('--y', e.clientY + 'px');
         });
 
-        // Функция копирования
+        // Копирование
         function copyScript() {
             const code = 'loadstring(game:HttpGet("https://synity.vercel.app/op"))()';
-            navigator.clipboard.writeText(code).then(() => {
-                alert('Script copied to clipboard!');
-            });
+            navigator.clipboard.writeText(code);
+            // Можно добавить мелкое уведомление, если захочешь
         }
     </script>
 </body>
