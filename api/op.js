@@ -1,8 +1,17 @@
 export default function handler(req, res) {
-  // Твой Lua код
-  const luaScript = `print("Synity connection test: SUCCESS")`;
+  const userAgent = req.headers['user-agent'] || '';
 
-  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-  res.setHeader('Access-Control-Allow-Origin', '*'); // Разрешаем доступ отовсюду
-  return res.status(200).send(luaScript);
+  if (userAgent.includes('Roblox')) {
+    // ТУТ ДОЛЖЕН БЫТЬ ТВОЙ LUA КОД
+    const luaScript = `
+        print("Synity Hub Loaded!")
+        -- Вставь сюда свой основной скрипт чита
+    `;
+
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    return res.status(200).send(luaScript);
+  } else {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.status(403).send('<h1>403 | Access Denied</h1>');
+  }
 }
