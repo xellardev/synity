@@ -1,11 +1,15 @@
-    // Проверяем, является ли запрос запросом из Roblox
-    // Обычно Roblox присылает User-Agent: Roblox/WinInet или подобное
+export default async function handler(req, res) {
+    const userAgent = req.headers['user-agent'] || '';
+
     if (userAgent.toLowerCase().includes('roblox')) {
-        // Если просит роблокс — перенаправляем на "сырой" файл библиотеки
-        // Замени ссылку ниже на прямую ссылку к твоему .lua файлу
-        res.redirect('https://raw.githubusercontent.com/lixeal/xllr/refs/heads/home/walk.lua');
+        // Вместо редиректа, скачиваем код сами
+        const response = await fetch('https://raw.githubusercontent.com/lixeal/xllr/refs/heads/home/walk.lua');
+        const luaCode = await response.text();
+        
+        // Отдаем код как обычный текст
+        res.setHeader('Content-Type', 'text/plain');
+        res.send(luaCode);
     } else {
-        // Если зашел человек через браузер — кидаем на твой гитхаб
         res.redirect('https://github.com/lixeal/xllr/tree/home');
     }
 }
