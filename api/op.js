@@ -1,15 +1,29 @@
 export default async function handler(req, res) {
-    const userAgent = req.headers['user-agent'] || '';
+  const userAgent = req.headers['user-agent'] || '';
+  const GITHUB_URL = 'https://raw.githubusercontent.com/lixeal/xllr/refs/heads/home/walk.lua';
 
-    if (userAgent.toLowerCase().includes('roblox')) {
-        // Вместо редиректа, скачиваем код сами
-        const response = await fetch('https://raw.githubusercontent.com/lixeal/xllr/refs/heads/home/walk.lua');
-        const luaCode = await response.text();
-        
-        // Отдаем код как обычный текст
-        res.setHeader('Content-Type', 'text/plain');
-        res.send(luaCode);
-    } else {
-        res.redirect('https://github.com/lixeal/xllr/tree/home');
+  if (userAgent.includes('Roblox')) {
+    try {
+      // Запрашиваем скрипт напрямую с GitHub
+      const response = await fetch(GITHUB_URL);
+
+      if (!response.ok) {
+        throw new Error(`GitHub error: ${response.status}`);
+      }
+
+      const luaScript = await response.text();
+
+      // Отдаем скачанный Lua-код
+      res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+      return res.status(200).send(luaScript);
+
+    } catch (error) {
+      // Если Гитхаб упал или ссылка битая
+      console.error(error);
+      return res.status(500).send('-- Error: Could not load script from GitHub');
     }
-}
+  } else {
+    // Если зашли через браузер, а не из игры
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.status(403).send('<h1>022 | Access Denied kiddy</h1>');
+  }
