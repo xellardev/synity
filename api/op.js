@@ -25,5 +25,6 @@ export default async function handler(req, res) {
   } else {
     // Если зашли через браузер, а не из игры
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.status(403).send('<h1>022 | Access Denied kiddy</h1>');
+    return res.status(403).send('<h1>403 | Access Denied</h1>');
   }
+}
